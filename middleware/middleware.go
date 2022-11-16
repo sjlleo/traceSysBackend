@@ -15,7 +15,7 @@ func Auth() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		c.JSON(401, gin.H{
+		c.JSON(200, gin.H{
 			"code": 401,
 			"msg":  "无权限",
 		})

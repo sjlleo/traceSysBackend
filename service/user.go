@@ -14,7 +14,7 @@ func Login(c *gin.Context) {
 		c.PostForm("username"),
 		c.PostForm("password"),
 	); err != nil {
-		c.JSON(401, gin.H{
+		c.JSON(200, gin.H{
 			"code": 401,
 			"msg":  "用户名或密码不正确",
 		})
@@ -29,6 +29,7 @@ func Login(c *gin.Context) {
 
 		c.JSON(200, gin.H{
 			"code": 200,
+			"role": roleID,
 			"msg":  "登录成功",
 		})
 	}
@@ -52,7 +53,7 @@ func Register(c *gin.Context) {
 		2,
 	); err != nil {
 		// 无权限
-		c.JSON(403, gin.H{
+		c.JSON(200, gin.H{
 			"code": 403,
 			"msg":  err.Error(),
 		})

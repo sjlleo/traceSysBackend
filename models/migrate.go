@@ -9,5 +9,6 @@ func DBAutoMigration() {
 	db.AutoMigrate(
 		&Users{},
 		&Nodes{},
+		&Target{},
 	)
 }

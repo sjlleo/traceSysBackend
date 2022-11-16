@@ -11,15 +11,24 @@ import (
 func New() *gin.Engine {
 	r := gin.Default()
 
-	store := cookie.NewStore([]byte("dogdai"))
+	store := cookie.NewStore([]byte("leo-tracesys"))
 	r.Use(sessions.Sessions("SESSION", store))
 
-	r.POST("/login", service.Login)
-	r.POST("/register", service.Register)
-	r.GET("/logout", middleware.Auth(), service.Logout)
+	r.POST("/api/login", service.Login)
+	r.POST("/api/register", service.Register)
+	r.GET("/api/logout", middleware.Auth(), service.Logout)
 
-	r.GET("/ping", middleware.Auth(), service.Ping)
-	r.GET("/node/list", middleware.Auth(), service.ListNodes)
-	r.POST("/node/add", middleware.Auth(), service.AddNode)
+	r.GET("/api/node/list", middleware.Auth(), service.ListNodes)
+	r.DELETE("/api/node/:id", middleware.Auth(), service.DelNode)
+	r.POST("/api/node/add", middleware.Auth(), service.AddNode)
+	r.PUT("/api/node/edit", middleware.Auth(), service.ModifyNode)
+
+	r.POST("/api/target/add", middleware.Auth(), service.AddTarget)
+	r.GET("/api/target/list", middleware.Auth(), service.GetTargetList)
+	r.DELETE("/api/target/:id", middleware.Auth(), service.DelTarget)
+	r.PUT("/api/target/edit", middleware.Auth(), service.ModifyTarget)
+
+	r.GET("/api/user/nodes", middleware.Auth(), service.GetNodesForUser)
+
 	return r
 }
