@@ -25,7 +25,7 @@ func GetNodesForUser(c *gin.Context) {
 	session := sessions.Default(c)
 	role := session.Get("role")
 	res, _ := models.ListNodesUser(role.(int))
-	c.JSON(200, gin.H{"code": 200,"data": res})
+	c.JSON(200, gin.H{"code": 200, "data": res})
 }
 
 func DelNode(c *gin.Context) {

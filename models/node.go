@@ -43,8 +43,13 @@ func ListNodes(p *PaginationQ) error {
 	}
 }
 
-func ListNodesUser(role int) (*[]Nodes, error) {
-	var nodes []Nodes
+type NodeUser struct {
+	ID string `json:"value"`
+	IP string `json:"label"`
+}
+
+func ListNodesUser(role int) (*[]NodeUser, error) {
+	var nodes []NodeUser
 	db := database.GetDB()
 
 	tx := db.Model(&Nodes{})

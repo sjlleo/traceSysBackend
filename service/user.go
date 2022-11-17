@@ -10,7 +10,7 @@ import (
 func Login(c *gin.Context) {
 	session := sessions.Default(c)
 
-	if roleID, err := models.ValidUser(
+	if id, roleID, err := models.ValidUser(
 		c.PostForm("username"),
 		c.PostForm("password"),
 	); err != nil {
@@ -22,6 +22,7 @@ func Login(c *gin.Context) {
 
 		user := session.Get("user")
 		if user == nil {
+			session.Set("user_id", id)
 			session.Set("user", c.PostForm("username"))
 			session.Set("role", roleID)
 			session.Save()

@@ -23,13 +23,13 @@ type Users struct {
 
 func (t *Users) TableName() string { return "users" }
 
-func ValidUser(username string, password string) (roleID int, err error) {
+func ValidUser(username string, password string) (ID int, roleID int, err error) {
 	db := database.GetDB()
 
 	u := Users{}
 
 	err = db.Where(&Users{Username: username, Password: util.MD5(password)}).First(&u).Error
-	return u.Role, err
+	return int(u.ID), u.Role, err
 }
 
 func CreateUser(username string, password string, roleID int) (err error) {

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"log"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/sjlleo/traceSysBackend/models"
 )
@@ -22,7 +24,8 @@ func GetTargetList(c *gin.Context) {
 
 func ModifyTarget(c *gin.Context) {
 	var t models.Target
-	if err := c.ShouldBind(&t); err == nil {
+	if err := c.Bind(&t); err == nil {
+		log.Println(t)
 		if err := models.ModifyTarget(&t); err != nil {
 			c.JSON(200, gin.H{"code": 500, "error": err.Error()})
 			return
@@ -49,8 +52,11 @@ func DelTarget(c *gin.Context) {
 }
 
 func AddTarget(c *gin.Context) {
+	session := sessions.Default(c)
+	id := session.Get("user_id")
 	if err := models.AddTarget(
 		c.PostForm("ip"),
+		id.(int),
 	); err != nil {
 		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
 		return

@@ -10,12 +10,12 @@ import (
 
 type Target struct {
 	gorm.Model
-	TargetIP      string `gorm:"type:varchar(60); comment:'需监测的 IP';"`
-	TargetPort    int    `gorm:"type:int; comment:'被监测的端口'" json:"TargetPort,omitempty"`
-	Method        int    `gorm:"type:int; comment:'监测方法'"`
-	Interval      int    `gorm:"type:int; comment: '监测时间间隔'"`
+	TargetIP      string `gorm:"type:varchar(60); comment:'需监测的 IP';" form:"ip"`
+	TargetPort    int    `gorm:"type:int; comment:'被监测的端口'" json:"TargetPort,omitempty" form:"port"`
+	Method        int    `gorm:"type:int; comment:'监测方法'" form:"method"`
+	Interval      int    `gorm:"type:int; comment: '监测时间间隔'" form:"interval"`
 	CreatedUserID int    `gorm:"type:int; comment: '创建监测规则的用户 ID'"`
-	NodesID       string `gorm:"type:string; comment: '监测所对应的节点 ID'"`
+	NodesID       string `gorm:"type:string; comment: '监测所对应的节点 ID'" form:"nodeid"`
 }
 
 func (t *Target) TableName() string {
@@ -60,14 +60,13 @@ func DelTarget(id int) error {
 	return nil
 }
 
-func AddTarget(ip string) error {
+func AddTarget(ip string, id int) error {
 	db := database.GetDB()
-
 	if addr := net.ParseIP(ip); addr == nil {
 		return errors.New("IP 格式错误")
 	}
 
-	if err := db.Create(&Target{TargetIP: ip}).Error; err != nil {
+	if err := db.Create(&Target{TargetIP: ip, CreatedUserID: id}).Error; err != nil {
 		return err
 	}
 
@@ -76,7 +75,7 @@ func AddTarget(ip string) error {
 
 func ModifyTarget(t *Target) error {
 	db := database.GetDB()
-	res := db.Model(t).Updates(t)
+	res := db.Model(&t).Where("target_ip=?", t.TargetIP).Updates(&t)
 	if res.Error != nil {
 		return res.Error
 	} else {
