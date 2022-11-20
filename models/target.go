@@ -51,7 +51,7 @@ func ListTargets(p *PaginationQ) error {
 
 func DelTarget(id int) error {
 	db := database.GetDB()
-	res := db.Delete(&Nodes{}, id)
+	res := db.Delete(&Target{}, id)
 	if res.Error != nil {
 		return res.Error
 	} else if res.RowsAffected == 0 {
@@ -60,13 +60,13 @@ func DelTarget(id int) error {
 	return nil
 }
 
-func AddTarget(ip string, id int) error {
+func AddTarget(ip string, id int, interval int, method int, nodesID string) error {
 	db := database.GetDB()
 	if addr := net.ParseIP(ip); addr == nil {
 		return errors.New("IP 格式错误")
 	}
 
-	if err := db.Create(&Target{TargetIP: ip, CreatedUserID: id}).Error; err != nil {
+	if err := db.Create(&Target{TargetIP: ip, CreatedUserID: id, Interval: interval, Method: method, NodesID: nodesID}).Error; err != nil {
 		return err
 	}
 
@@ -75,7 +75,7 @@ func AddTarget(ip string, id int) error {
 
 func ModifyTarget(t *Target) error {
 	db := database.GetDB()
-	res := db.Model(&t).Where("target_ip=?", t.TargetIP).Updates(&t)
+	res := db.Model(&t).Where("id = ?", t.ID).Updates(&t)
 	if res.Error != nil {
 		return res.Error
 	} else {

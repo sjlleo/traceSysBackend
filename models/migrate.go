@@ -10,5 +10,6 @@ func DBAutoMigration() {
 		&Users{},
 		&Nodes{},
 		&Target{},
+		&Result{},
 	)
 }

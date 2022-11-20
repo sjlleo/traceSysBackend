@@ -54,9 +54,20 @@ func DelTarget(c *gin.Context) {
 func AddTarget(c *gin.Context) {
 	session := sessions.Default(c)
 	id := session.Get("user_id")
-	if err := models.AddTarget(
+	interval, err := strconv.Atoi(c.PostForm("interval"))
+	if err!= nil {
+		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
+	}
+	method, err := strconv.Atoi(c.PostForm("method"))
+	if err!= nil {
+		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
+	}
+	if err = models.AddTarget(
 		c.PostForm("ip"),
 		id.(int),
+		interval,
+		method,
+		c.PostForm("nodeid"),
 	); err != nil {
 		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
 		return

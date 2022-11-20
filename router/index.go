@@ -30,5 +30,8 @@ func New() *gin.Engine {
 
 	r.GET("/api/user/nodes", middleware.Auth(), service.GetNodesForUser)
 
+	r.GET("/api/tracelist/token/:token", service.GetTraceList)
+	r.POST("/api/result/add", service.RecieveDataFromClient)
+
 	return r
 }
