@@ -65,3 +65,16 @@ func Register(c *gin.Context) {
 		})
 	}
 }
+
+func ListUsers(c *gin.Context) {
+	p := models.PaginationQ{}
+	if err := c.ShouldBind(&p); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+	}
+	if err := models.ListTargets(&p); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	} else {
+		c.JSON(200, p)
+	}
+}

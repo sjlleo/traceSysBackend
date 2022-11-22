@@ -29,9 +29,12 @@ func New() *gin.Engine {
 	r.PUT("/api/target/edit", middleware.Auth(), service.ModifyTarget)
 
 	r.GET("/api/user/nodes", middleware.Auth(), service.GetNodesForUser)
+	r.GET("/api/user/list", middleware.Auth(), service.ListUsers)
 
 	r.GET("/api/tracelist/token/:token", service.GetTraceList)
 	r.POST("/api/result/add", service.RecieveDataFromClient)
+
+	r.POST("/api/result", service.SearchResult)
 
 	return r
 }

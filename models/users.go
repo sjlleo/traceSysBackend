@@ -48,3 +48,21 @@ func CreateUser(username string, password string, roleID int) (err error) {
 
 	return nil
 }
+
+func ListUsers(p *PaginationQ) error {
+	var users []Users
+	db := database.GetDB()
+	tx := db.Model(&Users{})
+	// 查找条件
+	if p.Parm != "" {
+		tx = tx.Where("ip like ?", "%"+p.Parm+"%")
+	}
+	total, err := crudAll(p, tx, &users)
+	if err != nil {
+		return err
+	} else {
+		p.Total = uint(total)
+		p.Data = users
+		return nil
+	}
+}

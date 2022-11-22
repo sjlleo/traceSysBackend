@@ -21,3 +21,16 @@ func RecieveDataFromClient(c *gin.Context) {
 		}
 	}
 }
+
+func SearchResult(c *gin.Context) {
+	var args models.ShowResArgs
+
+	c.ShouldBindJSON(&args)
+	if res, err := models.ShowTraceData(args); err == nil {
+		c.JSON(200, gin.H{
+			"code": 200,
+			"res": res,
+		})
+	}
+
+}
