@@ -25,7 +25,6 @@ func (t *Users) TableName() string { return "users" }
 
 func ValidUser(username string, password string) (ID int, roleID int, err error) {
 	db := database.GetDB()
-
 	u := Users{}
 
 	err = db.Where(&Users{Username: username, Password: util.MD5(password)}).First(&u).Error
@@ -65,4 +64,12 @@ func ListUsers(p *PaginationQ) error {
 		p.Data = users
 		return nil
 	}
+}
+
+func UpdateUser(user Users) error {
+	db := database.GetDB()
+	tx := db.Model(&Users{})
+	// 查找条件
+	err := tx.Updates(&user).Error
+	return err
 }

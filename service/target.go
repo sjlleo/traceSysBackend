@@ -24,7 +24,7 @@ func GetTargetList(c *gin.Context) {
 
 func ModifyTarget(c *gin.Context) {
 	var t models.Target
-	if err := c.Bind(&t); err == nil {
+	if err := c.ShouldBindJSON(&t); err == nil {
 		log.Println(t)
 		if err := models.ModifyTarget(&t); err != nil {
 			c.JSON(200, gin.H{"code": 500, "error": err.Error()})
@@ -52,23 +52,15 @@ func DelTarget(c *gin.Context) {
 }
 
 func AddTarget(c *gin.Context) {
+	var t models.Target
 	session := sessions.Default(c)
 	id := session.Get("user_id")
-	interval, err := strconv.Atoi(c.PostForm("interval"))
-	if err!= nil {
+
+	if err := c.ShouldBindJSON(&t); err != nil {
 		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
 	}
-	method, err := strconv.Atoi(c.PostForm("method"))
-	if err!= nil {
-		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
-	}
-	if err = models.AddTarget(
-		c.PostForm("ip"),
-		id.(int),
-		interval,
-		method,
-		c.PostForm("nodeid"),
-	); err != nil {
+	t.CreatedUserID = id.(int)
+	if err := models.AddTarget(t); err != nil {
 		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
 		return
 	} else {

@@ -94,7 +94,18 @@ func ShowTraceData(args ShowResArgs) ([]FrontendResult, error) {
 	tx := db.Model(&Result{})
 	tx = tx.Where("method = ?", args.Method)
 	tx = tx.Where("target_id = ?", t.ID).Where("node_id = ?", args.NodeID)
-	tx = tx.Where("unix_timestamp(created_at) BETWEEN unix_timestamp(?) AND unix_timestamp(?)", args.StartDate, args.EndDate)
+
+	if args.StartDate.String() != "0001-01-01 00:00:00" {
+		tx = tx.Where("unix_timestamp(created_at) > unix_timestamp(?)", args.StartDate)
+	}
+	if args.EndDate.String() != "0001-01-01 00:00:00" {
+		tx = tx.Where("unix_timestamp(created_at) < unix_timestamp(?)", args.EndDate)
+	}
+
+	if args.EndDate.String() == "0001-01-01 00:00:00" && args.StartDate.String() == "0001-01-01 00:00:00" {
+		tx = tx.Limit(30).Order("created_at DESC")
+	}
+
 	err := tx.Find(&r).Error
 	return r, err
 }

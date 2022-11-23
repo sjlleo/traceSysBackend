@@ -5,17 +5,18 @@ import (
 	"net"
 
 	"github.com/sjlleo/traceSysBackend/database"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type Target struct {
 	gorm.Model
-	TargetIP      string `gorm:"type:varchar(60); comment:'需监测的 IP';" form:"ip"`
-	TargetPort    int    `gorm:"type:int; comment:'被监测的端口'" json:"TargetPort,omitempty" form:"port"`
-	Method        int    `gorm:"type:int; comment:'监测方法'" form:"method"`
-	Interval      int    `gorm:"type:int; comment: '监测时间间隔'" form:"interval"`
-	CreatedUserID int    `gorm:"type:int; comment: '创建监测规则的用户 ID'"`
-	NodesID       string `gorm:"type:string; comment: '监测所对应的节点 ID'" form:"nodeid"`
+	TargetIP      string         `gorm:"type:varchar(60); comment:'需监测的 IP';" json:"ip"`
+	TargetPort    int            `gorm:"type:int; comment:'被监测的端口'" json:"port"`
+	Method        int            `gorm:"type:int; comment:'监测方法'" json:"method"`
+	Interval      int            `gorm:"type:int; comment: '监测时间间隔'" json:"interval"`
+	CreatedUserID int            `gorm:"type:int; comment: '创建监测规则的用户 ID'"`
+	NodesID       datatypes.JSON `gorm:"type:string; comment: '监测所对应的节点 ID'" json:"nodeid"`
 }
 
 func (t *Target) TableName() string {
@@ -60,13 +61,13 @@ func DelTarget(id int) error {
 	return nil
 }
 
-func AddTarget(ip string, id int, interval int, method int, nodesID string) error {
+func AddTarget(t Target) error {
 	db := database.GetDB()
-	if addr := net.ParseIP(ip); addr == nil {
+	if addr := net.ParseIP(t.TargetIP); addr == nil {
 		return errors.New("IP 格式错误")
 	}
 
-	if err := db.Create(&Target{TargetIP: ip, CreatedUserID: id, Interval: interval, Method: method, NodesID: nodesID}).Error; err != nil {
+	if err := db.Create(&t).Error; err != nil {
 		return err
 	}
 

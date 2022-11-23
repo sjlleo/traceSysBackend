@@ -44,7 +44,7 @@ func ListNodes(p *PaginationQ) error {
 }
 
 type NodeUser struct {
-	ID string `json:"value"`
+	ID uint    `json:"value"`
 	IP string `json:"label"`
 }
 
