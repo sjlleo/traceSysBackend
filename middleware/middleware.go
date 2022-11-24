@@ -22,3 +22,19 @@ func Auth() gin.HandlerFunc {
 		c.Abort()
 	}
 }
+
+func AdminAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		log.Println(session.Get("user"))
+		if session.Get("user") != nil && session.Get("role").(uint) == 1 {
+			c.Next()
+			return
+		}
+		c.JSON(200, gin.H{
+			"code": 401,
+			"msg":  "无权限",
+		})
+		c.Abort()
+	}
+}

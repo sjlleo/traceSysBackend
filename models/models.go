@@ -5,6 +5,27 @@ import (
 	"time"
 )
 
+type User interface {
+	ListNodes(p *PaginationQ) error
+	AddNode(ip string, role_str string, secret string) error
+	ModifyNode(n *Nodes) error
+	DelNode(id int) error
+	ListTargets(p *PaginationQ) error
+	DelTarget(id int) error
+	ModifyTarget(t *Target) error
+	FindTargetIPNodeInfo(t *NodeInfo) error
+}
+
+type Normal struct {
+	UserID uint
+	RoleID uint
+}
+
+type Admin struct {
+	UserID uint
+	RoleID uint
+}
+
 const TimeFormat = "2006-01-02 15:04:05"
 
 type LocalTime time.Time

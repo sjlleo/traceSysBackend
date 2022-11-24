@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/sjlleo/traceSysBackend/database"
 	"gorm.io/datatypes"
@@ -63,6 +64,8 @@ func AddTraceData(c *ClientData) error {
 			return err
 		}
 	}
+	// 修改在线时间
+	db.Model(&Nodes{ID: c.NodeID}).Update("lastseen", time.Now())
 	return nil
 }
 
@@ -91,18 +94,22 @@ func ShowTraceData(args ShowResArgs) ([]FrontendResult, error) {
 	// 搜索监控的 IP 对应的 ID 号码
 	db := database.GetDB()
 	db.Model(&Target{}).Where("target_ip = ?", args.IP).Take(&t)
+
 	tx := db.Model(&Result{})
 	tx = tx.Where("method = ?", args.Method)
 	tx = tx.Where("target_id = ?", t.ID).Where("node_id = ?", args.NodeID)
 
-	if args.StartDate.String() != "0001-01-01 00:00:00" {
+	startDateValid := args.StartDate.String() != "0001-01-01 00:00:00"
+	endDateValid := args.EndDate.String() != "0001-01-01 00:00:00"
+
+	if startDateValid {
 		tx = tx.Where("unix_timestamp(created_at) > unix_timestamp(?)", args.StartDate)
 	}
-	if args.EndDate.String() != "0001-01-01 00:00:00" {
+	if endDateValid {
 		tx = tx.Where("unix_timestamp(created_at) < unix_timestamp(?)", args.EndDate)
 	}
 
-	if args.EndDate.String() == "0001-01-01 00:00:00" && args.StartDate.String() == "0001-01-01 00:00:00" {
+	if !startDateValid && !endDateValid {
 		tx = tx.Limit(30).Order("created_at DESC")
 	}
 

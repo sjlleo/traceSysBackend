@@ -15,8 +15,15 @@ func New() *gin.Engine {
 	r.Use(sessions.Sessions("SESSION", store))
 
 	r.POST("/api/login", service.Login)
-	r.POST("/api/register", service.Register)
+	// r.POST("/api/register", service.Register)
 	r.GET("/api/logout", middleware.Auth(), service.Logout)
+
+	r.POST("/api/user/updatePassword", middleware.Auth(), service.UpdatePwd)
+
+	r.GET("/api/user", middleware.AdminAuth(), service.ListUsers)
+	r.PUT("/api/user", middleware.AdminAuth(), service.UpdateUser)
+	r.POST("/api/user", middleware.AdminAuth(), service.CreateUser)
+	r.DELETE("/api/user", middleware.AdminAuth(), service.DeleteUser)
 
 	r.GET("/api/node/list", middleware.Auth(), service.ListNodes)
 	r.DELETE("/api/node/:id", middleware.Auth(), service.DelNode)
@@ -27,6 +34,7 @@ func New() *gin.Engine {
 	r.GET("/api/target/list", middleware.Auth(), service.GetTargetList)
 	r.DELETE("/api/target/:id", middleware.Auth(), service.DelTarget)
 	r.PUT("/api/target/edit", middleware.Auth(), service.ModifyTarget)
+	r.GET("/api/target/:ip", middleware.Auth(), service.TakeTargetNodeInfo)
 
 	r.GET("/api/user/nodes", middleware.Auth(), service.GetNodesForUser)
 	r.GET("/api/user/list", middleware.Auth(), service.ListUsers)
@@ -34,7 +42,7 @@ func New() *gin.Engine {
 	r.GET("/api/tracelist/token/:token", service.GetTraceList)
 	r.POST("/api/result/add", service.RecieveDataFromClient)
 
-	r.POST("/api/result", service.SearchResult)
+	r.POST("/api/result", middleware.Auth(), service.SearchResult)
 
 	return r
 }
