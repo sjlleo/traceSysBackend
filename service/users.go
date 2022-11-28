@@ -1,6 +1,9 @@
 package service
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/sjlleo/traceSysBackend/models"
@@ -128,19 +131,27 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
-	var user models.Users
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(200, gin.H{
-			"error": err.Error(),
-		})
-	} else {
+	if id_str := c.Param("id"); id_str != "" {
+		user := models.Users{}
+		id, err := strconv.ParseInt(id_str, 10, 32)
+		if err != nil {
+			c.JSON(200, gin.H{
+				"error": errors.New("ID 不合法").Error(),
+			})
+		}
+		user.ID = uint(id)
+		// log.Println(user)
 		if err := models.DelUser(user); err != nil {
 			c.JSON(200, gin.H{
-				"error": err.Error(),
+				"error": err.Error,
 			})
 		} else {
 			c.JSON(200, gin.H{"code": 200, "msg": "success"})
 		}
+	} else {
+		c.JSON(200, gin.H{
+			"error": errors.New("ID 不合法").Error(),
+		})
 	}
 }
 

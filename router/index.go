@@ -23,7 +23,7 @@ func New() *gin.Engine {
 	r.GET("/api/user", middleware.AdminAuth(), service.ListUsers)
 	r.PUT("/api/user", middleware.AdminAuth(), service.UpdateUser)
 	r.POST("/api/user", middleware.AdminAuth(), service.CreateUser)
-	r.DELETE("/api/user", middleware.AdminAuth(), service.DeleteUser)
+	r.DELETE("/api/user/:id", middleware.AdminAuth(), service.DeleteUser)
 
 	r.GET("/api/node/list", middleware.Auth(), service.ListNodes)
 	r.DELETE("/api/node/:id", middleware.Auth(), service.DelNode)

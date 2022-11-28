@@ -27,11 +27,12 @@ func GetTraceList(token string) TraceList {
 	db.Raw("SELECT * FROM `target` WHERE JSON_CONTAINS(`nodes_id` ->> '$[*]',JSON_ARRAY(?),'$') AND deleted_at IS NULL", nodes.ID).Scan(&target)
 	for _, v := range target {
 		task := TraceTask{
-			TaskID:   v.ID,
-			NodeID:   nodes.ID,
-			Interval: v.Interval,
-			Method:   v.Method,
-			IP:       v.TargetIP,
+			TaskID:     v.ID,
+			NodeID:     nodes.ID,
+			Interval:   v.Interval,
+			Method:     v.Method,
+			IP:         v.TargetIP,
+			TargetPort: uint(v.TargetPort),
 		}
 		// 将 task 放入 list
 		list.Task = append(list.Task, task)

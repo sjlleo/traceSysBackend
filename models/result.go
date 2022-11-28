@@ -33,10 +33,11 @@ type HopReport struct {
 
 type ClientData struct {
 	Data     map[int]*HopReport
-	Interval int  `json:"interval"`
-	NodeID   uint `json:"nodeId"`
-	TaskID   uint `json:"taskId"`
-	Method   int  `json:"method"`
+	Interval int       `json:"interval"`
+	NodeID   uint      `json:"nodeId"`
+	TaskID   uint      `json:"taskId"`
+	Method   int       `json:"method"`
+	Time     time.Time `json:"time"`
 }
 
 func AddTraceData(c *ClientData) error {
@@ -59,6 +60,7 @@ func AddTraceData(c *ClientData) error {
 			NodeID:     int(c.NodeID),
 			TargetID:   int(c.TaskID),
 		}
+		r.CreatedAt = c.Time
 		err = db.Model(&Result{}).Create(&r).Error
 		if err != nil {
 			return err
