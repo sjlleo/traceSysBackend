@@ -2,9 +2,11 @@ package models
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/sjlleo/traceSysBackend/database"
+	"github.com/sjlleo/traceSysBackend/util"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
@@ -38,6 +40,60 @@ type ClientData struct {
 	TaskID   uint      `json:"taskId"`
 	Method   int       `json:"method"`
 	Time     time.Time `json:"time"`
+}
+
+func CheckExceed(t *Tasks) bool {
+	var r []Result
+	db := database.GetDB()
+	tx := db.Model(&Result{})
+	tx = tx.Where("method = ?", t.TraceType).Where("ttl = ?", t.TTL)
+	tx = tx.Where("target_id = ?", t.TargetID).Where("node_id = ?", t.NodeID)
+
+	// 这里获取近一个月的时间作为参考数据，时间太久远的数据除了用来考古，没有太大的参考意义
+	nowTime := time.Now()
+	nowTimeStr := nowTime.Format("2006-01-02")
+	previosTime := nowTime.AddDate(0, -1, 0)
+	previosTimeStr := previosTime.Format("2006-01-02")
+	// 时间相关的语句目前 Gorm 还不能很完美的处理，直接手撕 SQL 语句
+	tx = tx.Where("`created_at` BETWEEN ? AND ?", previosTimeStr, nowTimeStr)
+
+	err := tx.Scan(&r).Error
+
+	if err != nil {
+		return false
+	}
+
+	var avgMaxRTT, avgPacketLoss float64
+	var count uint
+	for _, v := range r {
+		if len(v.IPList) == 0 {
+			continue
+		}
+		// 遍历搜索当前时间往后的10分钟内的历史数据
+		if util.IN_10_Minutes(nowTime, v.CreatedAt) {
+			// 单独根据某个数据集的峰值数据判断拥塞意义不大，还容易因过度耦合产生误报
+			switch t.Type {
+			case 1:
+				// RTT
+				avgMaxRTT += v.MaxRTT
+			case 2:
+				// Packet Loss
+				avgPacketLoss += v.PacketLoss
+			}
+			log.Println(v.CreatedAt)
+			count++
+		}
+	}
+
+	switch t.Type {
+	case 1:
+		log.Println(avgMaxRTT / float64(count))
+		return avgMaxRTT/float64(count) > t.ExceedRTT
+	case 2:
+		return avgPacketLoss/float64(count) > t.ExceedPacketLoss
+	default:
+		return false
+	}
 }
 
 func AddTraceData(c *ClientData) error {

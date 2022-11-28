@@ -14,6 +14,9 @@ type User interface {
 	DelTarget(id int) error
 	ModifyTarget(t *Target) error
 	FindTargetIPNodeInfo(t *NodeInfo) error
+	GetTask(p *PaginationQ) error
+	UpdateTask(t *Tasks) error
+	DeleteTask(id uint) error
 }
 
 type Normal struct {

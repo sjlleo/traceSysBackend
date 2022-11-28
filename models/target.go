@@ -81,7 +81,7 @@ func (a *Admin) DelTarget(id int) error {
 
 func (n *Normal) DelTarget(id int) error {
 	db := database.GetDB()
-	res := db.Delete(&Target{}, id)
+	res := db.Where("created_user_id = ?", n.UserID).Delete(&Target{}, id)
 	if res.Error != nil {
 		return res.Error
 	} else if res.RowsAffected == 0 {
