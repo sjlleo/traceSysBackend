@@ -2,6 +2,7 @@ package taskgroup
 
 import (
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -38,7 +39,6 @@ func StartTaskCycle() {
 func (t *Task) getTaskList() {
 	// 向数据库获取任务清单
 	list, err := models.GetAllTasks()
-
 	if err != nil {
 		log.Println(err)
 		return
@@ -49,7 +49,35 @@ func (t *Task) getTaskList() {
 }
 
 func (t *Task) DoTask() {
-	log.Println(t)
+	var model, msg string
+	needSend := models.CheckExceed(&t.TaskDetail)
+	if needSend {
+		switch t.TaskDetail.TraceType {
+		case 1:
+			// 获取模板
+			temp, err := models.GetTemplate(models.RTTExceed)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			model = temp.Model
+		case 2:
+			// 获取模板
+			temp, err := models.GetTemplate(models.PacketLossExceed)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			model = temp.Model
+		}
+		tag, err := models.FindTargetIPByID(t.TaskDetail.TargetID)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		msg = strings.Replace(model, "{IP}", tag.TargetIP, -1)
+	}
+	log.Println(needSend, msg)
 }
 
 func (t *Task) UpdateScheduler(list []models.Tasks) {
@@ -63,7 +91,7 @@ func (t *Task) UpdateScheduler(list []models.Tasks) {
 				ResultRWLock: &sync.RWMutex{},
 			}
 			// 获得 Map 对应 Key 的地址
-			s := ActiveSchedulers[t.TargetID]
+			s := ActiveSchedulers[t.ID]
 			s.Scheduler.Every(10).Minutes().Do(s.DoTask)
 			s.Scheduler.StartAsync()
 		}

@@ -132,6 +132,13 @@ type NodeInfo struct {
 	NodesID  datatypes.JSON `json:"nodeid"`
 }
 
+func FindTargetIPByID(targetID uint) (Target, error) {
+	db := database.GetDB()
+	t := Target{}
+	err := db.Model(&t).Where("id = ?", targetID).Take(&t).Error
+	return t, err
+}
+
 func (a *Admin) FindTargetIPNodeInfo(t *NodeInfo) error {
 	db := database.GetDB()
 	err := db.Model(&Target{}).Where("target_ip = ?", t.TargetIP).Take(&t).Error

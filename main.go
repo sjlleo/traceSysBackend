@@ -7,7 +7,7 @@ import (
 )
 
 func initDB() {
-	database.InitDBConn()
+	database.Init()
 	models.DBAutoMigration()
 }
 

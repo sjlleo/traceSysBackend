@@ -3,8 +3,6 @@ package models
 import (
 	"log"
 	"testing"
-
-	"github.com/sjlleo/traceSysBackend/database"
 )
 
 func TestGetNodeId(t *testing.T) {
@@ -13,7 +11,7 @@ func TestGetNodeId(t *testing.T) {
 }
 
 func initDB() {
-	database.InitDBConn()
+	// database.InitDBConn()
 	DBAutoMigration()
 }
 

@@ -2,18 +2,23 @@ package models
 
 import "github.com/sjlleo/traceSysBackend/database"
 
-type Messages struct {
+type Template struct {
 	ID     uint   `gorm:"primarykey; comment: '送信 ID'"`
 	Type   uint   `gorm:"type:int; comment: '送信类型'"`
 	Method uint   `gorm:"method:int; comment: '送信方式'"`
 	Model  string `gorm:"model:string; comment: '送信模板'"`
 }
 
-func (m *Messages) TableName() string {
-	return "messages"
+const (
+	RTTExceed        = 1
+	PacketLossExceed = 2
+)
+
+func (m *Template) TableName() string {
+	return "Template"
 }
 
-func CreateMessages(m *Messages) error {
+func CreateTemplate(m *Template) error {
 	db := database.GetDB()
 	if err := db.Create(m).Error; err != nil {
 		return err
@@ -21,7 +26,7 @@ func CreateMessages(m *Messages) error {
 	return nil
 }
 
-func UpdateMessages(m *Messages) error {
+func UpdateTemplate(m *Template) error {
 	db := database.GetDB()
 	if err := db.Model(m).Where("id =?", m.ID).Updates(&m).Error; err != nil {
 		return err
@@ -29,18 +34,19 @@ func UpdateMessages(m *Messages) error {
 	return nil
 }
 
-func DeleteMessages(m *Messages) error {
-    db := database.GetDB()
+func DeleteTemplate(m *Template) error {
+	db := database.GetDB()
 	if err := db.Where("id =?", m.ID).Delete(m).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetMessages(m *Messages) error {
+func GetTemplate(exceedType int) (Template, error) {
 	db := database.GetDB()
-    if err := db.Model(m).Where("id =?", m.ID).First(&m).Error; err!= nil {
-        return err
-    }
-	return nil
+	m := Template{}
+	if err := db.Model(m).Where("id =?", exceedType).First(&m).Error; err != nil {
+		return m, err
+	}
+	return m, nil
 }

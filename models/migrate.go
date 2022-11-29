@@ -11,5 +11,7 @@ func DBAutoMigration() {
 		&Nodes{},
 		&Target{},
 		&Result{},
+		&Tasks{},
+		&Template{},
 	)
 }

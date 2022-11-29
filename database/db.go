@@ -11,7 +11,7 @@ import (
 
 var _db *gorm.DB
 
-func InitDBConn() {
+func Init() {
 	//配置MySQL连接参数
 	username := "tracesys"         //账号
 	password := "hZanGEC8FjbTh2x8" //密码
