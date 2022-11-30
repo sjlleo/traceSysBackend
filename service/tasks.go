@@ -15,7 +15,7 @@ func GetTaskList(c *gin.Context) {
 	if err := c.ShouldBind(&p); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 	}
-	if err := u.ListTargets(&p); err != nil {
+	if err := u.GetTask(&p); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	} else {
@@ -60,29 +60,30 @@ func AddTask(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&t); err != nil {
 		c.JSON(200, gin.H{"code": 500, "error": err.Error()})
+		return
 	}
 	t.CreatedUserID = id.(uint)
 	switch {
 	case t.Name == "":
-		c.JSON(200, gin.H{"code": 200, "error": "请输入任务名称"})
+		c.JSON(200, gin.H{"code": 500, "error": "请输入任务名称"})
 		return
 	case t.Type == 0:
-		c.JSON(200, gin.H{"code": 200, "error": "请选择任务类型"})
+		c.JSON(200, gin.H{"code": 500, "error": "请选择任务类型"})
 		return
 	case t.CallMethod == 0:
-		c.JSON(200, gin.H{"code": 200, "error": "请选择送信方法"})
+		c.JSON(200, gin.H{"code": 500, "error": "请选择送信方法"})
 		return
 	case t.TTL == 0:
-		c.JSON(200, gin.H{"code": 200, "error": "请选择 TTL"})
+		c.JSON(200, gin.H{"code": 500, "error": "请选择 TTL"})
 		return
 	case t.NodeID == 0:
-		c.JSON(200, gin.H{"code": 200, "error": "请选择节点"})
+		c.JSON(200, gin.H{"code": 500, "error": "请选择节点"})
 		return
 	case t.TargetID == 0:
-		c.JSON(200, gin.H{"code": 200, "error": "请选择监测目标"})
+		c.JSON(200, gin.H{"code": 500, "error": "请选择监测目标"})
 		return
-	case t.ExceedRTT == 0 || t.ExceedPacketLoss == 0:
-		c.JSON(200, gin.H{"code": 200, "error": "请选择超时规则"})
+	case t.ExceedRTT != 0 || t.ExceedPacketLoss != 0:
+		c.JSON(200, gin.H{"code": 500, "error": "请选择超时规则"})
 		return
 	}
 	if err := models.CreateTask(&t); err != nil {

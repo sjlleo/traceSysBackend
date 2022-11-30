@@ -39,6 +39,12 @@ func New() *gin.Engine {
 	r.GET("/api/user/nodes", middleware.Auth(), service.GetNodesForUser)
 	r.GET("/api/user/list", middleware.Auth(), service.ListUsers)
 
+	r.GET("/api/task", middleware.Auth(), service.GetTaskList)
+	r.PUT("/api/task", middleware.Auth(), service.ModifyTask)
+	r.POST("/api/task", middleware.Auth(), service.AddTask)
+	r.DELETE("/api/task/:id", middleware.Auth(), service.DelTask)
+	r.GET("/api/user/target/:targetID", middleware.Auth(), service.GetTargetUser)
+
 	r.GET("/api/tracelist/token/:token", service.GetTraceList)
 	r.POST("/api/result/add", service.RecieveDataFromClient)
 

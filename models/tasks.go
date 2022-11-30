@@ -86,7 +86,7 @@ func (n *Normal) DeleteTask(id uint) error {
 func (A *Admin) GetTask(p *PaginationQ) error {
 	var t []Tasks
 	db := database.GetDB()
-	tx := db.Model(&Target{})
+	tx := db.Model(&Tasks{})
 	// 查找条件
 	if p.Parm != "" {
 		tx = tx.Where("name like ?", "%"+p.Parm+"%")

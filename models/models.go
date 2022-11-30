@@ -17,6 +17,7 @@ type User interface {
 	GetTask(p *PaginationQ) error
 	UpdateTask(t *Tasks) error
 	DeleteTask(id uint) error
+	ListTargetUser(nodeID uint) ([]TargetUser, error)
 }
 
 type Normal struct {

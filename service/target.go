@@ -25,6 +25,22 @@ func GetTargetList(c *gin.Context) {
 	}
 }
 
+func GetTargetUser(c *gin.Context) {
+	targetID := c.Param("targetID")
+	tid, err := strconv.Atoi(targetID)
+	if err != nil {
+		c.JSON(200, gin.H{"error": err.Error()})
+		return
+	}
+	u := GetRole(c)
+	res, err := u.ListTargetUser(uint(tid))
+	if err != nil {
+		c.JSON(200, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, res)
+}
+
 func TakeTargetNodeInfo(c *gin.Context) {
 	var nodesArr models.NodeInfo
 	u := GetRole(c)

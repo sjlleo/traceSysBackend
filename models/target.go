@@ -11,7 +11,7 @@ import (
 
 type Target struct {
 	gorm.Model
-	TargetIP      string         `gorm:"type:varchar(60); comment:'需监测的 IP';" json:"ip"`
+	TargetIP      string         `gorm:"type:varchar(60); comment:'需监测的 IP'; uniqueIndex" json:"ip"`
 	TargetPort    int            `gorm:"type:int; comment:'被监测的端口'" json:"port"`
 	Method        int            `gorm:"type:int; comment:'监测方法'" json:"method"`
 	Interval      int            `gorm:"type:int; comment: '监测时间间隔'" json:"interval"`
@@ -149,4 +149,29 @@ func (n *Normal) FindTargetIPNodeInfo(t *NodeInfo) error {
 	db := database.GetDB()
 	err := db.Model(&Target{}).Where("target_ip = ?", t.TargetIP).Where("created_user_id = ?", n.UserID).Take(&t).Error
 	return err
+}
+
+type TargetUser struct {
+	ID       uint   `json:"value"`
+	TargetIP string `json:"label"`
+}
+
+func (a *Admin) ListTargetUser(nodeID uint) ([]TargetUser, error) {
+	var targets []TargetUser
+	db := database.GetDB()
+
+	tx := db.Model(&Target{})
+
+	tx.Where("deleted_at is null").Where("JSON_CONTAINS(`nodes_id` ->> '$[*]',JSON_ARRAY(?),'$')", nodeID).Find(&targets)
+	return targets, nil
+}
+
+func (n *Normal) ListTargetUser(nodeID uint) ([]TargetUser, error) {
+	var targets []TargetUser
+	db := database.GetDB()
+
+	tx := db.Model(&Target{})
+
+	tx.Where("deleted_at is null").Where("JSON_CONTAINS(`nodes_id` ->> '$[*]',JSON_ARRAY(?),'$')", nodeID).Where("created_user_id = ?", n.UserID).Find(&targets)
+	return targets, nil
 }
