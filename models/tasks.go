@@ -63,7 +63,7 @@ func (n *Normal) UpdateTask(t *Tasks) error {
 
 func (A *Admin) DeleteTask(id uint) error {
 	db := database.GetDB()
-	res := db.Delete(&Target{}, id)
+	res := db.Delete(&Tasks{}, id)
 	if res.Error != nil {
 		return res.Error
 	} else if res.RowsAffected == 0 {
@@ -74,7 +74,7 @@ func (A *Admin) DeleteTask(id uint) error {
 
 func (n *Normal) DeleteTask(id uint) error {
 	db := database.GetDB()
-	res := db.Where("created_user_id = ?", n.UserID).Delete(&Target{}, id)
+	res := db.Where("created_user_id = ?", n.UserID).Delete(&Tasks{}, id)
 	if res.Error != nil {
 		return res.Error
 	} else if res.RowsAffected == 0 {
@@ -122,9 +122,29 @@ func (n *Normal) GetTask(p *PaginationQ) error {
 func GetAllTasks() ([]Tasks, error) {
 	var t []Tasks
 	db := database.GetDB()
-    err := db.Model(&Tasks{}).Find(&t).Error
+	err := db.Model(&Tasks{}).Find(&t).Error
 	if err != nil {
 		return nil, err
+	}
+	return t, nil
+}
+
+func (A *Admin) GetTaskByID(id uint) (Tasks, error) {
+	var t Tasks
+	db := database.GetDB()
+	err := db.Model(&Tasks{}).Where("id = ?", id).Find(&t).Error
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+func (n *Normal) GetTaskByID(id uint) (Tasks, error) {
+	var t Tasks
+	db := database.GetDB()
+	err := db.Model(&Tasks{}).Where("id = ?", id).Where("created_user_id = ?", n.UserID).Find(&t).Error
+	if err != nil {
+		return t, err
 	}
 	return t, nil
 }

@@ -6,7 +6,43 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/sjlleo/traceSysBackend/models"
+	taskgroup "github.com/sjlleo/traceSysBackend/task_group"
 )
+
+func TestTask(c *gin.Context) {
+	u := GetRole(c)
+	idstr := c.Param("id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code":  500,
+			"error": err.Error(),
+		})
+	}
+	t, err := u.GetTaskByID(uint(id))
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code":  500,
+			"error": err.Error(),
+		})
+	}
+
+	task := taskgroup.Task{
+		TaskDetail: t,
+	}
+	status := task.DoTask()
+	if status {
+		c.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "我们监测到您的监测目标未来存在可能出现拥塞的情况，已经为您发送信件，请接收",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "我们监测到您的监测目标未来不大可能出现拥塞的情况，请放心",
+		})
+	}
+}
 
 func GetTaskList(c *gin.Context) {
 	u := GetRole(c)
@@ -82,7 +118,7 @@ func AddTask(c *gin.Context) {
 	case t.TargetID == 0:
 		c.JSON(200, gin.H{"code": 500, "error": "请选择监测目标"})
 		return
-	case t.ExceedRTT != 0 || t.ExceedPacketLoss != 0:
+	case t.ExceedRTT != 0 && t.ExceedPacketLoss != 0:
 		c.JSON(200, gin.H{"code": 500, "error": "请选择超时规则"})
 		return
 	}

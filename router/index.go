@@ -18,6 +18,7 @@ func New() *gin.Engine {
 	// r.POST("/api/register", service.Register)
 	r.GET("/api/logout", middleware.Auth(), service.Logout)
 
+	r.GET("/api/user/info", middleware.Auth(), service.MyInformation)
 	r.POST("/api/user/updatePassword", middleware.Auth(), service.UpdatePwd)
 
 	r.GET("/api/user", middleware.AdminAuth(), service.ListUsers)
@@ -40,6 +41,7 @@ func New() *gin.Engine {
 	r.GET("/api/user/list", middleware.Auth(), service.ListUsers)
 
 	r.GET("/api/task", middleware.Auth(), service.GetTaskList)
+	r.GET("/api/task/test/:id", middleware.Auth(), service.TestTask)
 	r.PUT("/api/task", middleware.Auth(), service.ModifyTask)
 	r.POST("/api/task", middleware.Auth(), service.AddTask)
 	r.DELETE("/api/task/:id", middleware.Auth(), service.DelTask)

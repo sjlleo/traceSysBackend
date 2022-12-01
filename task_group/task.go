@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-co-op/gocron"
+	"github.com/sjlleo/traceSysBackend/email"
 	"github.com/sjlleo/traceSysBackend/models"
 )
 
@@ -48,7 +49,7 @@ func (t *Task) getTaskList() {
 	go t.CleanUpScheduler(list)
 }
 
-func (t *Task) DoTask() {
+func (t *Task) DoTask() bool {
 	var model, msg string
 	needSend := models.CheckExceed(&t.TaskDetail)
 	if needSend {
@@ -58,7 +59,7 @@ func (t *Task) DoTask() {
 			temp, err := models.GetTemplate(models.RTTExceed)
 			if err != nil {
 				log.Println(err)
-				return
+				return true
 			}
 			model = temp.Model
 		case 2:
@@ -66,18 +67,25 @@ func (t *Task) DoTask() {
 			temp, err := models.GetTemplate(models.PacketLossExceed)
 			if err != nil {
 				log.Println(err)
-				return
+				return true
 			}
 			model = temp.Model
+
 		}
 		tag, err := models.FindTargetIPByID(t.TaskDetail.TargetID)
 		if err != nil {
 			log.Println(err)
-			return
+			return true
 		}
-		msg = strings.Replace(model, "{IP}", tag.TargetIP, -1)
+		msg = strings.Replace(model, "{ip}", tag.TargetIP, -1)
+		// 查找用户的信息
+		u, _ :=models.FindUserByID(t.TaskDetail.CreatedUserID)
+		if t.TaskDetail.CallMethod == 1 {
+			email.SendMsg(msg, u.Email)
+		}
+		return true
 	}
-	log.Println(needSend, msg)
+	return false
 }
 
 func (t *Task) UpdateScheduler(list []models.Tasks) {
@@ -92,7 +100,7 @@ func (t *Task) UpdateScheduler(list []models.Tasks) {
 			}
 			// 获得 Map 对应 Key 的地址
 			s := ActiveSchedulers[t.ID]
-			s.Scheduler.Every(10).Minutes().Do(s.DoTask)
+			s.Scheduler.Every(60).Minutes().Do(s.DoTask)
 			s.Scheduler.StartAsync()
 		}
 	}

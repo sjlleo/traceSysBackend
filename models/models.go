@@ -18,6 +18,7 @@ type User interface {
 	UpdateTask(t *Tasks) error
 	DeleteTask(id uint) error
 	ListTargetUser(nodeID uint) ([]TargetUser, error)
+	GetTaskByID(id uint) (Tasks, error)
 }
 
 type Normal struct {

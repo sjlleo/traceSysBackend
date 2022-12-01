@@ -31,6 +31,17 @@ func ValidUser(username string, password string) (ID uint, roleID uint, err erro
 	return u.ID, u.Role, err
 }
 
+func FindUserByID(id uint) (Users, error) {
+	db := database.GetDB()
+	u := Users{}
+
+	err := db.Where(&Users{}).Where("id = ?", id).First(&u).Error
+	if err != nil {
+		return u, err
+	}
+	return u, nil
+}
+
 func CreateUser(u Users) (err error) {
 	db := database.GetDB()
 	u.Password = util.MD5(u.Password)

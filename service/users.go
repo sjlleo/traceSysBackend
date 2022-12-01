@@ -76,6 +76,20 @@ func Register(c *gin.Context) {
 	}
 }
 
+func MyInformation(c *gin.Context) {
+	var user models.Users
+	session := sessions.Default(c)
+    if err := c.ShouldBindJSON(&user); err!= nil {
+        c.JSON(200, gin.H{
+            "code": 500,
+            "msg":  err.Error(),
+		})
+	}
+	id := session.Get("user_id").(int)
+	res, _ := models.FindUserByID(uint(id))
+	c.JSON(200, res)
+}
+
 func CreateUser(c *gin.Context) {
 	var user models.Users
 	if err := c.ShouldBindJSON(&user); err != nil {
