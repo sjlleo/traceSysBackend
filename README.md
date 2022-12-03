@@ -79,3 +79,12 @@ location ^~ /
 本项目强制使用 HTTPS 进行节点和后端之间的数据传输，请务必为 Nginx 部署 SSL 证书~
 
 > PS: 可以直接使用 `acme.sh` 快捷为域名颁发证书。
+
+
+## 项目截图
+
+![p2](https://user-images.githubusercontent.com/13616352/205425006-00911fff-7d63-46d5-b95d-7073149a8224.jpeg)
+![p1](https://user-images.githubusercontent.com/13616352/205425004-b9e26492-1d71-421f-9881-68b3edb89087.jpeg)
+![p3](https://user-images.githubusercontent.com/13616352/205424993-58337531-f663-42c3-aacc-f93402c77a0b.jpeg)
+![p4](https://user-images.githubusercontent.com/13616352/205424997-a5aed927-5b76-4943-a413-db15ad4a1baf.jpeg)
+![p5](https://user-images.githubusercontent.com/13616352/205425002-d27ea472-478a-4f88-bd97-3d49c937a99e.jpeg)
