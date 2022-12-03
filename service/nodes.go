@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-contrib/sessions"
@@ -21,6 +22,25 @@ func ListNodes(c *gin.Context) {
 	} else {
 		c.JSON(200, p)
 	}
+}
+
+func GetNodeInfoForShell(c *gin.Context) {
+	token := c.Param("token")
+	res, err := models.GetNodeFromToken(token)
+	if err != nil {
+		c.String(400, "Token Invalid")
+		return
+	}
+	user, _ := models.FindUserByID(res.CreatedUserID)
+	str := ""
+	str += fmt.Sprintf("%v|", user.Username)
+	str += fmt.Sprintf("%v|", res.IP)
+	if user.Role == 1 {
+		str += fmt.Sprintf("%v", "管理员")
+	} else {
+		str += fmt.Sprintf("%v", "用户")
+	}
+	c.String(200, str)
 }
 
 func GetNodesForUser(c *gin.Context) {

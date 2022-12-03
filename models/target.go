@@ -68,6 +68,20 @@ func (n *Normal) ListTargets(p *PaginationQ) error {
 	}
 }
 
+func (a *Admin) CountTarget() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Target{}).Count(&count).Error
+	return count, err
+}
+
+func (n *Normal) CountTarget() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Target{}).Where("created_user_id = ?", n.UserID).Error
+	return count, err
+}
+
 func (a *Admin) DelTarget(id int) error {
 	db := database.GetDB()
 	res := db.Delete(&Target{}, id)

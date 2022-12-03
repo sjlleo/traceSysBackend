@@ -31,15 +31,40 @@ func ValidUser(username string, password string) (ID uint, roleID uint, err erro
 	return u.ID, u.Role, err
 }
 
-func FindUserByID(id uint) (Users, error) {
-	db := database.GetDB()
-	u := Users{}
+type UsersInfo struct {
+	Username string `json:"username"`
+	Role     uint   `json:"role"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+}
 
-	err := db.Where(&Users{}).Where("id = ?", id).First(&u).Error
+func FindUserByID(id uint) (UsersInfo, error) {
+	db := database.GetDB()
+	u := UsersInfo{}
+
+	err := db.Model(&Users{}).Where("id = ?", id).First(&u).Error
 	if err != nil {
 		return u, err
 	}
 	return u, nil
+}
+
+func CountUser() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Users{}).Count(&count).Error
+	return count, err
+}
+
+func (a *Admin) CountUser() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Users{}).Count(&count).Error
+	return count, err
+}
+
+func (n *Normal) CountUser() (int64, error) {
+	return 0, nil
 }
 
 func CreateUser(u Users) (err error) {

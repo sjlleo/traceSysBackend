@@ -16,8 +16,8 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, gin.H{
-			"code": 401,
-			"msg":  "无权限",
+			"code":  401,
+			"error": "无权限",
 		})
 		c.Abort()
 	}

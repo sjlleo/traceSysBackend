@@ -9,6 +9,7 @@ import (
 func initDB() {
 	database.Init()
 	models.DBAutoMigration()
+	models.CheckFirstRun()
 }
 
 func main() {

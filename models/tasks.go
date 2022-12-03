@@ -61,6 +61,20 @@ func (n *Normal) UpdateTask(t *Tasks) error {
 	return nil
 }
 
+func (a *Admin) CountTask() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Tasks{}).Count(&count).Error
+	return count, err
+}
+
+func (n *Normal) CountTask() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Tasks{}).Where("created_user_id = ?", n.UserID).Error
+	return count, err
+}
+
 func (A *Admin) DeleteTask(id uint) error {
 	db := database.GetDB()
 	res := db.Delete(&Tasks{}, id)

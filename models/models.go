@@ -19,6 +19,10 @@ type User interface {
 	DeleteTask(id uint) error
 	ListTargetUser(nodeID uint) ([]TargetUser, error)
 	GetTaskByID(id uint) (Tasks, error)
+	CountUser() (int64, error)
+	CountTarget() (int64, error)
+	CountTask() (int64, error)
+	CountNode() (int64, error)
 }
 
 type Normal struct {
@@ -69,4 +73,18 @@ func (t *LocalTime) Scan(v interface{}) error {
 
 func (t LocalTime) String() string {
 	return time.Time(t).Format(TimeFormat)
+}
+
+func CheckFirstRun() {
+	if num, err := CountUser(); err == nil {
+		if num == 0 {
+			u := Users{
+				Username: "admin",
+				// pwd - adminadmin
+				Password: "f6fdffe48c908deb0f4c3bd36c032e72",
+				Role:     1,
+			}
+			CreateUser(u)
+		}
+	}
 }

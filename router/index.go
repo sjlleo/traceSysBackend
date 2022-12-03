@@ -18,7 +18,11 @@ func New() *gin.Engine {
 	// r.POST("/api/register", service.Register)
 	r.GET("/api/logout", middleware.Auth(), service.Logout)
 
+	r.GET("/api/ip/excel/model", service.GetDownload)
+
 	r.GET("/api/user/info", middleware.Auth(), service.MyInformation)
+	r.GET("/api/node/token/:token", service.GetNodeInfoForShell)
+	r.GET("/api/dash/statistics", middleware.Auth(), service.StatisticsData)
 	r.POST("/api/user/updatePassword", middleware.Auth(), service.UpdatePwd)
 
 	r.GET("/api/user", middleware.AdminAuth(), service.ListUsers)

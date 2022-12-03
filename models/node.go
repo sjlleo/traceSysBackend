@@ -19,6 +19,7 @@ type Nodes struct {
 	Role          int          `gorm:"type:int"`
 	CreatedUserID uint         `gorm:"type:int"`
 	Secret        string       `gorm:"type:varchar(50)" json:"secret"`
+	Geo           string       `gorm:"-" json:"geo"`
 	Lastseen      time.Time
 }
 
@@ -101,6 +102,30 @@ func (n *Normal) DelNode(id int) error {
 		return errors.New("节点 ID 未找到")
 	}
 	return nil
+}
+
+func GetNodeFromToken(token string) (Nodes, error) {
+	var n Nodes
+	db := database.GetDB()
+	err := db.Model(&Nodes{}).Where("secret = ?", token).Take(&n).Error
+	if err != nil {
+		return n, err
+	}
+	return n, nil
+}
+
+func (a *Admin) CountNode() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Nodes{}).Count(&count).Error
+	return count, err
+}
+
+func (n *Normal) CountNode() (int64, error) {
+	var count int64
+	db := database.GetDB()
+	err := db.Model(&Nodes{}).Where("created_user_id = ?", n.UserID).Error
+	return count, err
 }
 
 func (a *Admin) AddNode(ip string, role_str string, secret string) error {
