@@ -181,6 +181,10 @@ func ShowTraceData(args ShowResArgs) ([]FrontendResult, error) {
 	err := tx.Find(&r).Error
 	// return r, err
 
+	if len(r) == 0 {
+		return []FrontendResult{}, nil
+	}
+
 	var roundCycle int
 	// 如果两个都满足，因为巨大的数据量，我们需要对数据集做一定的归并处理
 	diffHour := time.Time(args.EndDate).Sub(time.Time(args.StartDate)).Hours()
@@ -237,8 +241,8 @@ func ShowTraceData(args ShowResArgs) ([]FrontendResult, error) {
 				if tmp_target.Interval == 0 {
 					continue
 				}
-				tmp_target.AvgRTT /= float64(count % roundCycle)
-				tmp_target.PacketLoss /= float64(count % roundCycle)
+				tmp_target.AvgRTT /= float64(count%roundCycle) + 1
+				tmp_target.PacketLoss /= float64(count%roundCycle) + 1
 				tmp_target.CreatedAt = target.CreatedAt
 				res = append(res, tmp_target)
 			}
@@ -257,6 +261,5 @@ func ShowTraceData(args ShowResArgs) ([]FrontendResult, error) {
 		tmp[target.TTL].Interval = target.Interval * roundCycle
 		tmp[target.TTL].Count += 1
 	}
-	// log.Println(res)
 	return res, err
 }

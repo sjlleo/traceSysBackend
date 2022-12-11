@@ -11,7 +11,7 @@ import (
 
 type Target struct {
 	gorm.Model
-	TargetIP      string         `gorm:"type:varchar(60); comment:'需监测的 IP'; uniqueIndex" json:"ip"`
+	TargetIP      string         `gorm:"type:varchar(60); comment:'需监测的 IP'; " json:"ip"`
 	TargetPort    int            `gorm:"type:int; comment:'被监测的端口'" json:"port"`
 	Method        int            `gorm:"type:int; comment:'监测方法'" json:"method"`
 	Interval      int            `gorm:"type:int; comment: '监测时间间隔'" json:"interval"`
@@ -108,6 +108,12 @@ func AddTarget(t Target) error {
 	db := database.GetDB()
 	if addr := net.ParseIP(t.TargetIP); addr == nil {
 		return errors.New("IP 格式错误")
+	}
+
+	var tmp Target
+	db.Where("target_ip = ?", t.TargetIP).Take(&tmp)
+	if tmp.TargetIP != "" {
+		return errors.New("监控 IP 已经添加")
 	}
 
 	if err := db.Create(&t).Error; err != nil {

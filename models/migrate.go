@@ -13,5 +13,6 @@ func DBAutoMigration() {
 		&Result{},
 		&Tasks{},
 		&Template{},
+		&IPReviews{},
 	)
 }

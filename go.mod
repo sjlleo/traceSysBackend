@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/gin-contrib/sessions v0.0.5
+	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/xuri/excelize/v2 v2.6.1
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/mysql v1.4.3

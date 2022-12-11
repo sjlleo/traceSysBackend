@@ -23,6 +23,9 @@ type User interface {
 	CountTarget() (int64, error)
 	CountTask() (int64, error)
 	CountNode() (int64, error)
+	SearchReview(p *PaginationQ) error
+	PassReview(review_id uint)
+	DeclineReview(review_id uint)
 }
 
 type Normal struct {
