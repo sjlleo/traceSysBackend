@@ -13,6 +13,7 @@ type Target struct {
 	gorm.Model
 	TargetIP      string         `gorm:"type:varchar(60); comment:'需监测的 IP'; " json:"ip"`
 	TargetPort    int            `gorm:"type:int; comment:'被监测的端口'" json:"port"`
+	Alias         string         `gorm:"type:varchar(255)" comment:"Alias" json:"alias"`
 	Method        int            `gorm:"type:int; comment:'监测方法'" json:"method"`
 	Interval      int            `gorm:"type:int; comment: '监测时间间隔'" json:"interval"`
 	CreatedUserID uint           `gorm:"type:int; comment: '创建监测规则的用户 ID'"`
@@ -149,6 +150,7 @@ func (n *Normal) ModifyTarget(t *Target) error {
 type NodeInfo struct {
 	Code     uint           `gorm:"-" json:"code"`
 	TargetIP string         `json:"ip"`
+	Alias    string         `json:"ip_alias"`
 	NodesID  datatypes.JSON `json:"nodeid"`
 }
 

@@ -72,6 +72,7 @@ func AddNode(c *gin.Context) {
 	if err := u.AddNode(
 		c.PostForm("ip"),
 		c.PostForm("role"),
+		c.PostForm("alias"),
 		c.PostForm("secret"),
 	); err != nil {
 		c.JSON(200, gin.H{"code": 500, "error": err.Error()})

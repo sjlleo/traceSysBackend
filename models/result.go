@@ -174,6 +174,7 @@ func ShowTraceData(args ShowResArgs) ([]FrontendResult, error) {
 	if !startDateValid && !endDateValid {
 		tx = tx.Limit(30).Order("created_at DESC")
 		err := tx.Find(&r).Error
+		log.Println(r)
 		return r, err
 
 	}

@@ -16,6 +16,7 @@ type Nodes struct {
 	UpdatedAt     time.Time    `json:"-"`
 	DeletedAt     sql.NullTime `gorm:"index" json:"-"`
 	IP            string       `gorm:"type:varchar(50);uniqueIndex" json:"IP"`
+	Alias         string       `gorm:"type:varchar(255)" comment:"Alias" json:"alias"`
 	Role          int          `gorm:"type:int"`
 	CreatedUserID uint         `gorm:"type:int"`
 	Secret        string       `gorm:"type:varchar(50)" json:"secret"`
@@ -67,6 +68,7 @@ func (n *Normal) ListNodes(p *PaginationQ) error {
 type NodeUser struct {
 	ID uint   `json:"value"`
 	IP string `json:"label"`
+	Alias string `json:"alias"`
 }
 
 func ListNodesUser(role uint) (*[]NodeUser, error) {
@@ -128,7 +130,7 @@ func (n *Normal) CountNode() (int64, error) {
 	return count, err
 }
 
-func (a *Admin) AddNode(ip string, role_str string, secret string) error {
+func (a *Admin) AddNode(ip string, role_str string, alias string, secret string) error {
 	db := database.GetDB()
 
 	if addr := net.ParseIP(ip); addr == nil {
@@ -143,6 +145,7 @@ func (a *Admin) AddNode(ip string, role_str string, secret string) error {
 	node := Nodes{
 		IP:            ip,
 		Role:          role,
+		Alias:         alias,
 		Secret:        secret,
 		CreatedUserID: a.UserID,
 	}
@@ -154,7 +157,7 @@ func (a *Admin) AddNode(ip string, role_str string, secret string) error {
 	return nil
 }
 
-func (n *Normal) AddNode(ip string, role_str string, secret string) error {
+func (n *Normal) AddNode(ip string, role_str string, alias string, secret string) error {
 	db := database.GetDB()
 
 	if addr := net.ParseIP(ip); addr == nil {
@@ -173,6 +176,7 @@ func (n *Normal) AddNode(ip string, role_str string, secret string) error {
 	node := Nodes{
 		IP:            ip,
 		Role:          role,
+		Alias:         alias,
 		Secret:        secret,
 		CreatedUserID: n.UserID,
 	}

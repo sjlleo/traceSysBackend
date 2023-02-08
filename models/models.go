@@ -7,7 +7,7 @@ import (
 
 type User interface {
 	ListNodes(p *PaginationQ) error
-	AddNode(ip string, role_str string, secret string) error
+	AddNode(ip string, role_str string, alias string, secret string) error
 	ModifyNode(n *Nodes) error
 	DelNode(id int) error
 	ListTargets(p *PaginationQ) error
